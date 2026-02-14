@@ -27,29 +27,26 @@ export default function SuperAdminLogin() {
 
     console.log('Login attempt:', { user: username, userMatch, passMatch })
 
+    // Debug: mostrar qué se está comparando
+    console.log('Comparing:', {
+      inputUser: username.toLowerCase().trim(),
+      expectedUser: SUPER_ADMIN_EMAIL.toLowerCase(),
+      inputPass: password,
+      expectedPass: SUPER_ADMIN_PASSWORD
+    })
+
     if (userMatch && passMatch) {
-      try {
-        // Guardar sesión de super admin
-        localStorage.setItem('super_admin_session', JSON.stringify({
-          email: SUPER_ADMIN_EMAIL,
-          role: 'super_admin',
-          loginTime: new Date().toISOString()
-        }))
+      // Guardar sesión de super admin
+      localStorage.setItem('super_admin_session', JSON.stringify({
+        email: SUPER_ADMIN_EMAIL,
+        role: 'super_admin',
+        loginTime: new Date().toISOString()
+      }))
 
-        console.log('Login successful, redirecting...')
-
-        // Pequeño delay para asegurar que localStorage se guarde
-        await new Promise(resolve => setTimeout(resolve, 100))
-
-        // Redirigir al dashboard de super admin
-        router.push('/admin/super-dashboard')
-      } catch (err) {
-        console.error('Login error:', err)
-        setError('Error al iniciar sesión. Intenta de nuevo.')
-        setLoading(false)
-      }
+      // Usar window.location para redirección más confiable
+      window.location.href = '/admin/super-dashboard'
     } else {
-      setError('Credenciales incorrectas. Acceso denegado.')
+      setError(`Credenciales incorrectas. Usuario: ${userMatch ? '✓' : '✗'}, Contraseña: ${passMatch ? '✓' : '✗'}`)
       setLoading(false)
     }
   }
